@@ -10,7 +10,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
   } from "@/components/ui/sidebar"
-  import { ModeToggle } from "@/components/mode-toggle"
   import { Home, Boxes, Box, HardDrive, Network } from "lucide-react"
 import { SidebarLogo } from "./app-sidebar-logo"
 
@@ -52,7 +51,7 @@ const items = [
         </SidebarHeader>
         <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -72,8 +71,8 @@ const items = [
           </SidebarGroupContent>
         </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
-            <ModeToggle />
+        <SidebarFooter className="">
+
         </SidebarFooter>
       </Sidebar>
     )
