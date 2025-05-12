@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Overview
 
-## Getting Started
+This Docker Dashboard provides a clean, intuitive interface for managing your local Docker environment. It allows you to:
 
-First, run the development server:
+1. **Monitor Docker resources** with a comprehensive dashboard showing containers, images, volumes, and networks
+2. **Manage containers** - start, stop, restart, and remove containers with a simple UI
+3. **View container logs and details** in real-time
+4. **Manage images, volumes, and networks** with dedicated views
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Dashboard View**: Shows summary statistics of your Docker environment
+- **Container Management**: List, inspect, and control containers
+- **Image Management**: View and remove Docker images
+- **Volume & Network Management**: Manage Docker volumes and networks
+- **Real-time Logs**: View container logs directly in the UI
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Technical Implementation
 
-To learn more about Next.js, take a look at the following resources:
+The application is built with:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js App Router**: For routing and server components
+- **Server Components**: For data fetching directly from the Docker daemon
+- **Client Components**: For interactive UI elements
+- **Docker CLI Integration**: Uses `child_process.exec` to communicate with Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## How It Works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The application communicates with Docker through the Docker CLI, executing commands like `docker ps`, `docker logs`, etc. The results are parsed and displayed in a user-friendly interface.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To run this application, you'll need:
+
+1. Docker installed and running on your machine
+2. Node.js and npm/pnpm installed
+3. Permissions to execute Docker commands
