@@ -32,7 +32,7 @@ async function getNetworks(): Promise<DockerNetwork[]> {
     try {
       const errorData = await response.json()
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-    } catch (_e) {
+    } catch {
       // Explicitly ignore the error variable as we only care about the status code here
       throw new Error(`HTTP error! status: ${response.status}`)
     }

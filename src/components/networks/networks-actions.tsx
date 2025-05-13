@@ -66,7 +66,7 @@ export function NetworksActions() {
         try {
           const errorData = await response.json()
           throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-        } catch (_e) {
+        } catch {
           // Explicitly ignore the error variable (_e) as we only care about the status code here
           throw new Error(`HTTP error! status: ${response.status}`)
         }
@@ -76,7 +76,7 @@ export function NetworksActions() {
       const result: DockerNetwork = await response.json()
       return result
     },
-    onSuccess: (_data) => {
+    onSuccess: () => {
       toast.success(`Network creation request sent successfully.`)
       queryClient.invalidateQueries({ queryKey: ['networks'] })
       setOpen(false) // Close dialog on success

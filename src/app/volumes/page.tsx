@@ -8,9 +8,7 @@ export default function VolumesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Volumes</h1>
           <p className="text-muted-foreground">Manage your Docker volumes.</p>
         </div>
-        {/* VolumesActions is now integrated inside DataTableVolumes */}
       </div>
-
       <DataTableVolumes />
     </div>
   );

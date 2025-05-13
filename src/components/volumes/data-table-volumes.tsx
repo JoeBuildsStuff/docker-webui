@@ -154,7 +154,6 @@ export default function DataTableVolumes() {
       </div>
       <div>
         <DataTablePagination table={table} />
-        <DataTableVolumesSkeleton />
       </div>
     </div>
   )

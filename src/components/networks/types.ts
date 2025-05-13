@@ -3,6 +3,7 @@ export interface DockerNetwork {
   Name: string;
   Driver: string;
   Scope: string;
+  CreatedAt: string;
   IPv6?: string; // Optional, from `docker network ls`
   Internal?: string; // Optional, from `docker network ls`
   Labels?: string; // Optional, comma-separated

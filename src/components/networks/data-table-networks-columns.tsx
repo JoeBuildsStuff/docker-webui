@@ -64,21 +64,14 @@ export const columns: ColumnDef<DockerNetwork>[] = [
     ),
     cell: ({ row }) => <div>{row.getValue("Scope")}</div>,
   },
-   {
-    accessorKey: "Created",
+  {
+    accessorKey: "CreatedAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created" />
     ),
     cell: ({ row }) => {
-      const created = row.getValue("Created") as string
-      // Assuming 'Created' is in a format parseable by Date
-      // or directly a number (Unix timestamp)
-      try {
-        return <div>{formatTimeAgo(created)}</div>
-      } catch (error) {
-        console.error("Error processing network creation date:", error)
-        return <div>Invalid Date</div>
-      }
+      const createdAt: string = row.getValue("CreatedAt");
+      return <div>{formatTimeAgo(createdAt)}</div>;
     },
   },
   {
