@@ -1,5 +1,4 @@
-import { ImagesList } from "@/components/images/images-list"
-import { ImagesActions } from "@/components/images/images-actions"
+import DataTableImages from "@/components/images/data-table-images"
 
 export default function ImagesPage() {
   return (
@@ -9,10 +8,8 @@ export default function ImagesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Images</h1>
           <p className="text-muted-foreground">Manage your Docker images.</p>
         </div>
-        <ImagesActions />
       </div>
-
-      <ImagesList />
+      <DataTableImages />
     </div>
   )
 }

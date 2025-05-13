@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
   } from "@/components/ui/sidebar"
-  import { Home, Boxes, Box, HardDrive, Network } from "lucide-react"
+  import { Home, Container, Cloud, HardDrive, Network } from "lucide-react"
 import { SidebarLogo } from "./app-sidebar-logo"
 
 // Menu items.
@@ -23,12 +23,12 @@ const items = [
       {
         name: "Containers",
         path: "/containers",
-        icon: Boxes,
+        icon: Container,
       },
       {
         name: "Images",
         path: "/images",
-        icon: Box,
+        icon: Cloud,
       },
       {
         name: "Volumes",

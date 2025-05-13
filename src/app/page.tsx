@@ -10,7 +10,6 @@ export default function DashboardPage() {
           Monitor and manage your Docker containers, images, volumes, and networks.
         </p>
       </div>
-
       <DashboardStats />
 
       <div className="flex flex-col gap-2">

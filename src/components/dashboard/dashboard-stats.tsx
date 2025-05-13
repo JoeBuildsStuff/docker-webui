@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Box, Boxes, HardDrive, Play, Power, Server } from "lucide-react"
+import { Cloud, Container, HardDrive, Play, Power, Server } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardSkeleton } from "./dashboard-skeleton";
 
@@ -100,7 +100,7 @@ export function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Running Containers</CardTitle>
-          <Play className="h-4 w-4 text-muted-foreground" />
+          <Play className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.runningContainers}</div>
@@ -110,7 +110,7 @@ export function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Stopped Containers</CardTitle>
-          <Power className="h-4 w-4 text-muted-foreground" />
+          <Power className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.stoppedContainers}</div>
@@ -120,7 +120,7 @@ export function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Images</CardTitle>
-          <Box className="h-4 w-4 text-muted-foreground" />
+          <Cloud className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.images}</div>
@@ -130,7 +130,7 @@ export function DashboardStats() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Volumes</CardTitle>
-          <HardDrive className="h-4 w-4 text-muted-foreground" />
+          <HardDrive className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.volumes}</div>
@@ -167,7 +167,7 @@ export function DashboardStats() {
       <Card className="md:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Resource Usage</CardTitle>
-          <Boxes className="h-4 w-4 text-muted-foreground" />
+          <Container className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

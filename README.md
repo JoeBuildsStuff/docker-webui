@@ -56,6 +56,41 @@ A modern, intuitive web interface for managing your Docker environment. Monitor 
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+### Running with Docker
+
+Alternatively, you can run Docker Manager inside a Docker container. This is a convenient way to manage the application and its dependencies.
+
+1.  **Build the Docker image:**
+    ```bash
+    docker build -t docker-manager .
+    ```
+
+2.  **Run the Docker container:**
+
+    To allow Docker Manager to access and manage your host's Docker environment, you need to mount the Docker socket into the container.
+
+    ```bash
+    docker run -d -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock --name docker-manager-app docker-manager
+    ```
+    *   `-d`: Runs the container in detached mode (in the background).
+    *   `-p 3000:3000`: Maps port 3000 on your host to port 3000 in the container.
+    *   `-v /var/run/docker.sock:/var/run/docker.sock`: Mounts the Docker socket from the host into the container. This is crucial for the application to be able to interact with your Docker daemon.
+    *   `--name docker-manager-app`: Assigns a name to the running container for easier management.
+    *   `docker-manager`: Specifies the image to run.
+
+3.  **Access Docker Manager:**
+    Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+4.  **To stop the container:**
+    ```bash
+    docker stop docker-manager-app
+    ```
+
+5.  **To remove the container (after stopping):**
+    ```bash
+    docker rm docker-manager-app
+    ```
+
 ## 🏗️ Technology Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) with App Router

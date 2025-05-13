@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import { DynamicBreadcrumbs } from "@/components/dynamic-breadcrumbs";
 import { ModeToggle } from "@/components/mode-toggle";
-
+import { Providers } from "@/components/providers";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,33 +28,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        > 
-           <SidebarProvider>
-        <AppSidebar />
-        <main className="flex-1 overflow-auto px-4">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 flex-grow">
-              <SidebarTrigger className="-ml-1" />
-              <DynamicBreadcrumbs />
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>
+          <AppSidebar />
+          <main className="flex-1 overflow-auto px-4">
+            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+              <div className="flex items-center gap-2 flex-grow">
+                <SidebarTrigger className="-ml-1" />
+                <DynamicBreadcrumbs />
+              </div>
+              <div className="ml-auto border-none">
+                <ModeToggle />
+              </div>
+            </header>
+            <div className="">
+              {children}
             </div>
-            <div className="ml-auto border-none">
-            <ModeToggle />
-            </div>
-          </header>
-          <div className="">
-{children}</div>
           </main>
-<Toaster />
-          </SidebarProvider>
-          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

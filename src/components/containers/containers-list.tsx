@@ -1,60 +1,86 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ContainerActions } from "./container-actions"
+import { ContainersSkeleton } from "./containers-skeleton"
+import { AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-// Mock data for UI demonstration
-const mockContainers = [
-  {
-    ID: "abc123",
-    Names: "nginx-web",
-    Image: "nginx:latest",
-    State: "running",
-    Status: "Up 2 days",
-    CreatedAt: new Date(Date.now() - 172800000).toISOString(),
-    Ports: "0.0.0.0:80->80/tcp",
-  },
-  {
-    ID: "def456",
-    Names: "postgres-db",
-    Image: "postgres:14",
-    State: "running",
-    Status: "Up 1 day",
-    CreatedAt: new Date(Date.now() - 86400000).toISOString(),
-    Ports: "0.0.0.0:5432->5432/tcp",
-  },
-  {
-    ID: "ghi789",
-    Names: "redis-cache",
-    Image: "redis:alpine",
-    State: "running",
-    Status: "Up 3 hours",
-    CreatedAt: new Date(Date.now() - 10800000).toISOString(),
-    Ports: "0.0.0.0:6379->6379/tcp",
-  },
-  {
-    ID: "jkl012",
-    Names: "old-app",
-    Image: "node:16",
-    State: "exited",
-    Status: "Exited (0) 5 days ago",
-    CreatedAt: new Date(Date.now() - 432000000).toISOString(),
-    Ports: "",
-  },
-  {
-    ID: "mno345",
-    Names: "test-container",
-    Image: "alpine:latest",
-    State: "exited",
-    Status: "Exited (1) 2 days ago",
-    CreatedAt: new Date(Date.now() - 172800000).toISOString(),
-    Ports: "",
-  },
-]
+// Define an interface for the container data based on `docker ps` output
+// Adjust this based on the exact structure returned by your API route
+interface DockerContainer {
+  ID: string;
+  Names: string;
+  Image: string;
+  State: string;
+  Status: string;
+  CreatedAt: string; // docker ps gives a string description like "2 days ago" or a timestamp
+  Ports: string;
+  // Add other fields if needed based on your `docker ps --format`
+}
 
 export function ContainersList() {
-  const containers = mockContainers
+  const [containers, setContainers] = useState<DockerContainer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function fetchContainers() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/containers');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        const data: DockerContainer[] = await response.json();
+        setContainers(data);
+      } catch (e: unknown) {
+         if (e instanceof Error) {
+           setError(e.message);
+         } else {
+           setError("An unknown error occurred while fetching containers.");
+         }
+         console.error("Failed to fetch containers:", e);
+         setContainers([]); // Clear containers on error
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchContainers();
+    // Optional: Add interval refresh if needed
+    // const intervalId = setInterval(fetchContainers, 10000); // every 10 seconds
+    // return () => clearInterval(intervalId);
+  }, []);
+
+
+  // Loading State
+  if (loading) {
+    return <ContainersSkeleton />;
+  }
+
+  // Error State
+  if (error) {
+     return (
+       <Alert variant="destructive">
+         <AlertCircle className="h-4 w-4" />
+         <AlertTitle>Error Loading Containers</AlertTitle>
+         <AlertDescription>
+           {error}
+           <p className="text-xs text-muted-foreground mt-1">
+             Please ensure Docker is running and accessible.
+           </p>
+         </AlertDescription>
+       </Alert>
+     );
+   }
+
+  // Data Loaded State
   return (
     <div className="rounded-md border">
       <Table>
@@ -85,9 +111,11 @@ export function ContainersList() {
                 </TableCell>
                 <TableCell className="font-mono text-xs">{container.Image}</TableCell>
                 <TableCell>
-                  <Badge variant={container.State === "running" ? "default" : "secondary"}>{container.State}</Badge>
+                  <Badge variant={container.State === "running" ? "default" : "secondary"}>
+                    {container.State || 'unknown'}
+                  </Badge>
                 </TableCell>
-                <TableCell>{formatTimeAgo(new Date(container.CreatedAt))}</TableCell>
+                <TableCell>{container.Status}</TableCell>
                 <TableCell className="font-mono text-xs">{container.Ports || "-"}</TableCell>
                 <TableCell className="text-right">
                   <ContainerActions id={container.ID} state={container.State} />
@@ -99,26 +127,4 @@ export function ContainersList() {
       </Table>
     </div>
   )
-}
-
-// Simple time formatter function
-function formatTimeAgo(date: Date) {
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
-
-  let interval = seconds / 31536000
-  if (interval > 1) return Math.floor(interval) + " years ago"
-
-  interval = seconds / 2592000
-  if (interval > 1) return Math.floor(interval) + " months ago"
-
-  interval = seconds / 86400
-  if (interval > 1) return Math.floor(interval) + " days ago"
-
-  interval = seconds / 3600
-  if (interval > 1) return Math.floor(interval) + " hours ago"
-
-  interval = seconds / 60
-  if (interval > 1) return Math.floor(interval) + " minutes ago"
-
-  return Math.floor(seconds) + " seconds ago"
 }
