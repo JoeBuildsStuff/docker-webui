@@ -38,7 +38,10 @@ export const columns: ColumnDef<DockerImage>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Repository" />
     ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("Repository")}</div>,
+    cell: ({ row }) => {
+      const repository = row.getValue("Repository") as string;
+      return <div className="font-medium">{repository.length > 25 ? `${repository.substring(0, 25)}...` : repository}</div>;
+    },
   },
   {
     accessorKey: "Tag",

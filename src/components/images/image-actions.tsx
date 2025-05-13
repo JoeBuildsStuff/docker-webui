@@ -36,6 +36,7 @@ async function deleteImage(imageId: string): Promise<void> {
   try {
     await response.json(); // Attempt to parse JSON, useful for 200 OK responses
   } catch (_e) {
+    console.log("No body in response" + _e);
     // Ignore parsing error if status was OK (likely 204)
   }
 }

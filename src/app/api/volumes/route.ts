@@ -76,4 +76,67 @@ export async function GET() {
     console.error('[API /volumes] Error:', error);
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
+}
+
+// Type definition for the error structure potentially thrown by execAsync
+// (Could be moved to a shared types file)
+interface ExecError extends Error {
+  stderr?: string;
+  stdout?: string;
+}
+
+// POST handler for creating a new volume
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const volumeName = body.name;
+    const driver = body.driver; // Optional driver
+    // Add support for labels or driver opts if needed
+
+    if (!volumeName || typeof volumeName !== 'string') {
+      return NextResponse.json({ error: 'Volume name is required in the request body' }, { status: 400 });
+    }
+
+    // Validate volume name
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(volumeName)) {
+      return NextResponse.json({ error: 'Invalid volume name format' }, { status: 400 });
+    }
+
+    let command = `docker volume create --name ${volumeName}`;
+
+    // Add driver if provided and valid
+    if (driver && typeof driver === 'string' && /^[a-zA-Z0-9_.-]+$/.test(driver)) {
+      command += ` --driver ${driver}`;
+    }
+
+    console.log(`Attempting to execute: ${command}`);
+    const { stdout, stderr } = await execAsync(command);
+
+    if (stderr) {
+      // `docker volume create` might output errors to stderr
+      console.warn(`[API /volumes POST] Docker volume create stderr: ${stderr}`);
+      if (stderr.includes("already exists")) {
+         return NextResponse.json({ error: `Volume named \"${volumeName}\" already exists: ${stderr}` }, { status: 409 });
+      }
+      // Treat other stderr as potential failure
+      return NextResponse.json({ error: `Failed to create volume: ${stderr}` }, { status: 500 });
+    }
+
+    console.log(`[API /volumes POST] Docker volume create stdout: ${stdout}`); // Usually just the volume name
+    return NextResponse.json({ message: `Volume ${volumeName} created successfully`, name: stdout.trim() }, { status: 201 }); // 201 Created
+
+  } catch (error: unknown) {
+    let errorMessage = 'An unknown error occurred while creating the Docker volume.';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+        const execError = error as ExecError;
+        if (execError.stderr) {
+            errorMessage = `Docker command error: ${execError.stderr}`;
+        } else if (execError.stdout) {
+            errorMessage = `Docker command output (error context): ${execError.stdout}`;
+        }
+    }
+    console.error('[API /volumes POST] Error:', error);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
 } 

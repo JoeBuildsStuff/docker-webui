@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Play, Power, RefreshCw, Trash2 } from "lucide-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -14,57 +15,66 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import type { DockerContainer } from "./types" // Import type
 
 interface ContainerActionsProps {
-  id: string
-  state?: string
+  container: DockerContainer // Use the full container object
 }
 
-export function ContainerActions({ id, state }: ContainerActionsProps) {
-  const [loading, setLoading] = useState<string | null>(null)
+export function ContainerActions({ container }: ContainerActionsProps) {
+  const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const isRunning = state === "running"
+  const mutation = useMutation({
+    mutationFn: async (containerId: string) => {
+      const response = await fetch(`/api/containers/${containerId}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        // Try to parse error json from API
+        const errorMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          // Use specific error messages from API if available
+          if (response.status === 404) throw new Error(errorData.error || "Container not found.")
+          if (response.status === 409) throw new Error(errorData.error || "Container is running or conflict occurred.")
+          throw new Error(errorData.error || errorMsg);
+        } catch { // Handle cases where response body is not JSON or empty
+          throw new Error(errorMsg);
+        }
+      }
+      // Handle 200/204 success
+      return; // DELETE often returns no content
+    },
+    onSuccess: () => {
+      toast.success(`Container "${container.Names}" removed successfully.`)
+      queryClient.invalidateQueries({ queryKey: ['containers'] })
+      setShowDeleteDialog(false) // Close dialog on success
+    },
+    onError: (error) => {
+      toast.error(`Failed to remove container: ${error.message}`)
+      setShowDeleteDialog(false) // Close dialog on error as well
+    },
+  })
 
-  async function handleAction(action: string) {
-    setLoading(action)
-
-    // Simulate API call
-    setTimeout(() => {
-      toast.success(`Container ${action}ed successfully for ${id}`)
-      setLoading(null)
-    }, 1000)
+  const handleRemove = () => {
+    mutation.mutate(container.ID) // Pass container ID to mutation
   }
 
   return (
     <>
+      {/* Keep the div for flex alignment if needed by the parent Cell */}
       <div className="flex justify-end gap-2">
-        {isRunning ? (
-          <Button variant="outline" size="icon" onClick={() => handleAction("stop")} disabled={loading !== null}>
-            <Power className="h-4 w-4" />
-            <span className="sr-only">Stop</span>
-          </Button>
-        ) : (
-          <Button variant="outline" size="icon" onClick={() => handleAction("start")} disabled={loading !== null}>
-            <Play className="h-4 w-4" />
-            <span className="sr-only">Start</span>
-          </Button>
-        )}
-
         <Button
           variant="outline"
           size="icon"
-          onClick={() => handleAction("restart")}
-          disabled={loading !== null || !isRunning}
+          onClick={() => setShowDeleteDialog(true)}
+          disabled={mutation.isPending}
         >
-          <RefreshCw className="h-4 w-4" />
-          <span className="sr-only">Restart</span>
-        </Button>
-
-        <Button variant="outline" size="icon" onClick={() => setShowDeleteDialog(true)} disabled={loading !== null}>
           <Trash2 className="h-4 w-4" />
           <span className="sr-only">Remove</span>
         </Button>
+        {/* Add other action buttons here (Start, Stop, Restart) if needed */}
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -72,18 +82,20 @@ export function ContainerActions({ id, state }: ContainerActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Container</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this container? This action cannot be undone.
+              Are you sure you want to remove container &quot;{container?.Names}&quot; ({container?.ID.substring(0, 12)})?
+              {container?.State === 'running' && (
+                <span className="block text-destructive text-sm mt-2">Warning: Container is currently running. Removing may cause issues if not stopped gracefully. Standard remove will fail; consider stopping it first.</span>
+              )}
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={mutation.isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setShowDeleteDialog(false)
-                handleAction("remove")
-              }}
+              onClick={handleRemove}
+              disabled={mutation.isPending}
             >
-              Remove
+              {mutation.isPending ? "Removing..." : "Remove"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

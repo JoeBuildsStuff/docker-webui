@@ -1,5 +1,5 @@
 import { DashboardStats } from "@/components/dashboard/dashboard-stats"
-import { ContainersList } from "@/components/containers/containers-list"
+import { DataTableContainers } from "@/components/containers/data-table-containers"
 
 export default function DashboardPage() {
   return (
@@ -14,7 +14,7 @@ export default function DashboardPage() {
 
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold tracking-tight">Containers</h2>
-        <ContainersList />
+        <DataTableContainers />
       </div>
     </div>
   )

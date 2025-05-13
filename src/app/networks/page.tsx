@@ -1,5 +1,4 @@
-import { NetworksList } from "@/components/networks/networks-list"
-import { NetworksActions } from "@/components/networks/networks-actions"
+import { DataTableNetworks } from "@/components/networks/data-table-networks"
 
 export default function NetworksPage() {
   return (
@@ -9,10 +8,9 @@ export default function NetworksPage() {
           <h1 className="text-3xl font-bold tracking-tight">Networks</h1>
           <p className="text-muted-foreground">Manage your Docker networks.</p>
         </div>
-        <NetworksActions />
       </div>
 
-      <NetworksList />
+      <DataTableNetworks />
     </div>
   )
 }
