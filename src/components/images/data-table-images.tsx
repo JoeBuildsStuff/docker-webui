@@ -161,7 +161,7 @@ export default function DataTableImages() {
           </TableBody>
         </Table>
       </div>
-      <div className="py-4">
+      <div>
         <DataTablePagination table={table} />
       </div>
     </div>

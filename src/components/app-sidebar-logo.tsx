@@ -18,7 +18,7 @@ export function SidebarLogo() {
                 <ShipWheel className="size-6" strokeWidth={1.5}/>
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Docker Manager</span>
+                <span className="truncate font-semibold">Docker WebUI</span>
                 <span className="truncate text-xs">by Joe Taylor</span>
               </div>
             </SidebarMenuButton>

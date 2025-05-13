@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Sidebar,
     SidebarContent,
@@ -10,15 +12,17 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
   } from "@/components/ui/sidebar"
-  import { Home, Container, Cloud, HardDrive, Network } from "lucide-react"
+  import { ChartNoAxesCombined, Container, Cloud, HardDrive, Network } from "lucide-react"
 import { SidebarLogo } from "./app-sidebar-logo"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 // Menu items.
 const items = [
     {
         name: "Dashboard",
         path: "/",
-        icon: Home,
+        icon: ChartNoAxesCombined,
       },
       {
         name: "Containers",
@@ -43,6 +47,10 @@ const items = [
   ]
 
   export function AppSidebar() {
+    const pathname = usePathname()
+
+   console.log(pathname)
+
 
     return (
       <Sidebar>
@@ -56,12 +64,17 @@ const items = [
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton 
-                  asChild
-                //   variant="outline"
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(
+                      "w-full justify-start", // Default classes
+                      pathname === item.path
+                        ? "bg-muted/50 hover:bg-muted" // Active classes
+                        : "hover:bg-muted" // Inactive classes
+                    )}
                   >
                     <a href={item.path}>
-                      <item.icon />
+                      <item.icon className="w-4 h-4 mr-2" />
                       <span>{item.name}</span>
                     </a>
                   </SidebarMenuButton>

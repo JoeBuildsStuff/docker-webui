@@ -152,8 +152,9 @@ export default function DataTableVolumes() {
           </TableBody>
         </Table>
       </div>
-      <div className="py-4">
+      <div>
         <DataTablePagination table={table} />
+        <DataTableVolumesSkeleton />
       </div>
     </div>
   )

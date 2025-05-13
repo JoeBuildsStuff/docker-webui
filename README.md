@@ -1,7 +1,7 @@
-# Docker Manager
+# Docker WebUI
 
 <div align="center">
-  <img src="https://github.com/joetaylordev/assets/raw/main/docker-manager-screenshot.png" alt="Docker Manager Dashboard" width="800"/>
+  <img src="https://github.com/joetaylordev/assets/raw/main/docker-manager-screenshot.png" alt="Docker WebUI Dashboard" width="800"/>
 </div>
 
 A modern, intuitive web interface for managing your Docker environment. Monitor and control containers, images, volumes, and networks through a sleek, responsive dashboard.
@@ -58,7 +58,7 @@ A modern, intuitive web interface for managing your Docker environment. Monitor 
 
 ### Running with Docker
 
-Alternatively, you can run Docker Manager inside a Docker container. This is a convenient way to manage the application and its dependencies.
+Alternatively, you can run Docker WebUI inside a Docker container. This is a convenient way to manage the application and its dependencies.
 
 1.  **Build the Docker image:**
     ```bash
@@ -67,7 +67,7 @@ Alternatively, you can run Docker Manager inside a Docker container. This is a c
 
 2.  **Run the Docker container:**
 
-    To allow Docker Manager to access and manage your host's Docker environment, you need to mount the Docker socket into the container.
+    To allow Docker WebUI to access and manage your host's Docker environment, you need to mount the Docker socket into the container.
 
     ```bash
     docker run -d -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock --name docker-manager-app docker-manager
@@ -78,7 +78,7 @@ Alternatively, you can run Docker Manager inside a Docker container. This is a c
     *   `--name docker-manager-app`: Assigns a name to the running container for easier management.
     *   `docker-manager`: Specifies the image to run.
 
-3.  **Access Docker Manager:**
+3.  **Access Docker WebUI:**
     Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 4.  **To stop the container:**

@@ -72,16 +72,6 @@ export const columns: ColumnDef<DockerContainer>[] = [
     ),
   },
   {
-    accessorKey: "Image",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Image" />
-    ),
-    cell: ({ row }) => {
-      const image = row.getValue("Image") as string;
-      return <div className="font-mono text-xs">{image.length > 50 ? `${image.substring(0, 25)}...` : image}</div>;
-    },
-  },
-  {
     accessorKey: "State", // Base the badge on State, display Status text
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="State" />
@@ -93,6 +83,25 @@ export const columns: ColumnDef<DockerContainer>[] = [
           {state}
         </Badge>
       );
+    },
+  },
+  {
+    id: "actions",
+    header: ({ column }) => (
+      <DataTableColumnHeader className="justify-end text-right" column={column} title="Actions" />
+    ),
+    cell: ({ row }) => <div className="flex justify-start"><ContainerActions container={row.original} /></div>,
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "Image",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Image" />
+    ),
+    cell: ({ row }) => {
+      const image = row.getValue("Image") as string;
+      return <div className="font-mono text-xs">{image.length > 50 ? `${image.substring(0, 25)}...` : image}</div>;
     },
   },
   {
@@ -138,14 +147,5 @@ export const columns: ColumnDef<DockerContainer>[] = [
       return <div className="font-mono text-xs">{command.length > 40 ? `${command.substring(0, 37)}...` : command}</div>;
     },
     enableHiding: true, // Hidden by default
-  },
-  {
-    id: "actions",
-    header: ({ column }) => (
-      <DataTableColumnHeader className="justify-end text-right" column={column} title="Actions" />
-    ),
-    cell: ({ row }) => <div className="flex justify-end"><ContainerActions container={row.original} /></div>,
-    enableSorting: false,
-    enableHiding: false,
   },
 ] 

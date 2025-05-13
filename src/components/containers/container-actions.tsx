@@ -66,12 +66,13 @@ export function ContainerActions({ container }: ContainerActionsProps) {
       {/* Keep the div for flex alignment if needed by the parent Cell */}
       <div className="flex justify-end gap-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
+
           onClick={() => setShowDeleteDialog(true)}
           disabled={mutation.isPending}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 " />
           <span className="sr-only">Remove</span>
         </Button>
         {/* Add other action buttons here (Start, Stop, Restart) if needed */}

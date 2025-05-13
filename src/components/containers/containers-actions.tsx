@@ -114,14 +114,14 @@ export function ContainersActions() {
   return (
     <div className="flex gap-2">
       <Button variant="outline" size="sm" onClick={() => refreshContainers()} disabled={isRefreshing}>
-        <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+        <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         Refresh
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
+          <Button size="sm" variant="secondary">
+            <Plus className="h-4 w-4" />
             Add Container
           </Button>
         </DialogTrigger>

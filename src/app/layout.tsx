@@ -6,6 +6,10 @@ import { DynamicBreadcrumbs } from "@/components/dynamic-breadcrumbs";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Providers } from "@/components/providers";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { GitHubLogo } from "@/components/icons/GitHubLogo";
+import Link from "next/link";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -38,10 +42,17 @@ export default function RootLayout({
                 <DynamicBreadcrumbs />
               </div>
               <div className="ml-auto border-none">
-                <ModeToggle />
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" asChild>
+                    <Link href="https://github.com/JoeBuildsStuff/docker-webui" target="_blank" rel="noopener noreferrer">
+                      <GitHubLogo style={{ width: 18, height: 18 }} />
+                    </Link>
+                  </Button>
+                  <ModeToggle />
+                </div>
               </div>
             </header>
-            <div className="">
+            <div className="mb-10">
               {children}
             </div>
           </main>

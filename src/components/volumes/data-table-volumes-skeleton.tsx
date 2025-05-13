@@ -9,17 +9,17 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function DataTableVolumesSkeleton() {
-  const rowCount = 5; // Number of skeleton rows to display
+  const rowCount = 10; // Number of skeleton rows to display
 
   return (
     <div className="w-full space-y-4">
       {/* Top Bar: Actions and View Options */}
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Skeleton className="h-9 w-24" /> {/* Refresh button */}
           <Skeleton className="h-9 w-36" /> {/* Create Volume button */}
         </div>
-        <Skeleton className="h-9 w-28" /> {/* View options button */}
+        <Skeleton className="h-8 w-18" /> {/* View options button */}
       </div>
 
       {/* Table Skeleton */}
@@ -28,7 +28,7 @@ export function DataTableVolumesSkeleton() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                <Skeleton className="h-4 w-4" /> {/* Select Checkbox */}
+                <Skeleton className="h-4 w-4 rounded-sm" /> {/* Select Checkbox */}
               </TableHead>
               <TableHead>
                 <Skeleton className="h-4 w-40" /> {/* Name */}
@@ -48,7 +48,7 @@ export function DataTableVolumesSkeleton() {
             {Array.from({ length: rowCount }).map((_, i) => (
               <TableRow key={`skeleton-row-${i}`}>
                 <TableCell>
-                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-4 w-4 rounded-sm" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-5 w-full" />
@@ -59,8 +59,8 @@ export function DataTableVolumesSkeleton() {
                 <TableCell>
                   <Skeleton className="h-4 w-full" />
                 </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-8 w-8" />
+                <TableCell className="flex justify-end items-end">
+                  <Skeleton className="h-8 w-8 " />
                 </TableCell>
               </TableRow>
             ))}
@@ -69,15 +69,15 @@ export function DataTableVolumesSkeleton() {
       </div>
 
       {/* Pagination Skeleton */}
-      <div className="flex items-center justify-between py-4">
-        <Skeleton className="h-5 w-32" /> {/* Selected X of Y rows */}
-        <div className="flex items-center space-x-6 lg:space-x-8">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-3 w-48" /> {/* Selected X of Y rows */}
+        <div className="flex items-center space-x-6 lg:space-x-11">
           <div className="flex items-center space-x-2">
-            <Skeleton className="h-8 w-24" /> {/* Rows per page label */}
-            <Skeleton className="h-8 w-16" /> {/* Rows per page dropdown */}
+            <Skeleton className="h-3 w-24" /> {/* Rows per page label */}
+            <Skeleton className="h-8 w-20" /> {/* Rows per page dropdown */}
           </div>
-          <Skeleton className="h-5 w-20" /> {/* Page X of Y */}
-          <div className="flex items-center space-x-2">
+          <Skeleton className="h-3 w-20" /> {/* Page X of Y */}
+          <div className="flex items-center space-x-2 mr-2">
             <Skeleton className="h-8 w-8" /> {/* First page */}
             <Skeleton className="h-8 w-8" /> {/* Previous page */}
             <Skeleton className="h-8 w-8" /> {/* Next page */}
