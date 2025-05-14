@@ -41,12 +41,12 @@ export const columns: ColumnDef<DockerNetwork>[] = [
     cell: ({ row }) => <div>{row.getValue("Name")}</div>,
   },
   {
-    accessorKey: "ID",
+    accessorKey: "Id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => {
-      const id = row.getValue("ID") as string
+      const id = row.getValue("Id") as string
       return <div>{id.substring(0, 12)}</div>
     },
   },
@@ -65,13 +65,33 @@ export const columns: ColumnDef<DockerNetwork>[] = [
     cell: ({ row }) => <div>{row.getValue("Scope")}</div>,
   },
   {
-    accessorKey: "CreatedAt",
+    accessorKey: "Created",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created" />
     ),
     cell: ({ row }) => {
-      const createdAt: string = row.getValue("CreatedAt");
+      const createdAt: string = row.getValue("Created");
       return <div>{formatTimeAgo(createdAt)}</div>;
+    },
+  },
+  {
+    accessorKey: "Internal",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Internal" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("Internal") ? "Yes" : "No"}</div>,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id) ? 'Yes' : 'No')
+    },
+  },
+  {
+    accessorKey: "EnableIPv6",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="IPv6" />
+    ),
+    cell: ({ row }) => <div>{row.getValue("EnableIPv6") ? "Enabled" : "Disabled"}</div>,
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id) ? 'Enabled' : 'Disabled')
     },
   },
   {

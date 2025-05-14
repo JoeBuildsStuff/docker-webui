@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Docker Explorer",
+  title: "Docker WebUI",
   description: "Explore your Docker containers, images, volumes, and networks.",
 };
 

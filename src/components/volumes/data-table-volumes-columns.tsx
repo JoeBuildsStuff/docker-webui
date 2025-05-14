@@ -6,19 +6,19 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header"
 import { VolumeActions } from "./volume-actions"
 import { Badge } from "@/components/ui/badge";
+import { formatTimeAgo } from "@/lib/utils"; // Assuming utils path
 
-const parseLabelsToBadges = (labelsString: string | null | undefined) => {
-  if (!labelsString) {
+const parseLabelsToBadges = (labelsObject: Record<string, string> | null | undefined) => {
+  if (!labelsObject || Object.keys(labelsObject).length === 0) {
     return <span className="text-muted-foreground">-</span>;
   }
-  const labels = labelsString.split(',');
   return (
     <div className="flex flex-wrap gap-1">
-      {labels.map((label) => {
-        const parts = label.split('=');
-        const value = parts[1] || parts[0]; // Use value after '=' or the whole string if no '='
-        return <Badge key={value} variant="outline">{value}</Badge>;
-      })}
+      {Object.entries(labelsObject).map(([key, value]) => (
+        <Badge key={key} variant="outline" title={`${key}: ${value}`}>
+          {value} 
+        </Badge>
+      ))}
     </div>
   );
 };
@@ -55,7 +55,7 @@ export const columns: ColumnDef<DockerVolume>[] = [
     ),
     cell: ({ row }) => {
       const name = row.getValue("Name") as string;
-      return <div className="font-medium">{name.length > 25 ? `${name.substring(0, 25)}...` : name}</div>;
+      return <div className="truncate max-w-xs" title={name}>{name}</div>;
     },
   },
   {
@@ -73,8 +73,8 @@ export const columns: ColumnDef<DockerVolume>[] = [
     cell: ({ row }) => {
       const mountpoint = row.getValue("Mountpoint") as string;
       return (
-        <div className="font-mono text-xs">
-          {mountpoint.length > 25 ? `${mountpoint.substring(0, 25)}...` : mountpoint || <span className="text-muted-foreground">-</span>}
+        <div className="font-mono text-xs truncate max-w-xs" title={mountpoint}>
+          {mountpoint ? `${mountpoint.substring(0, 25)}...` : <span className="text-muted-foreground">-</span>}
         </div>
       );
     },
@@ -85,7 +85,7 @@ export const columns: ColumnDef<DockerVolume>[] = [
       <DataTableColumnHeader column={column} title="Labels" />
     ),
     cell: ({ row }) => {
-      const labels = row.getValue("Labels") as string;
+      const labels = row.getValue("Labels") as Record<string, string>;
       return parseLabelsToBadges(labels);
     },
   },
@@ -97,23 +97,13 @@ export const columns: ColumnDef<DockerVolume>[] = [
     cell: ({ row }) => <div>{row.getValue("Scope")}</div>,
   },
   {
-    accessorKey: "Size",
+    accessorKey: "CreatedAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Size" />
+      <DataTableColumnHeader column={column} title="Created" />
     ),
     cell: ({ row }) => {
-      const size = row.getValue("Size") as string;
-      return <div>{size === 'N/A' ? '' : size}</div>;
-    },
-  },
-  {
-    accessorKey: "Links",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Links" />
-    ),
-    cell: ({ row }) => {
-      const links = row.getValue("Links") as string;
-      return <div>{links === 'N/A' ? '' : links || <span className="text-muted-foreground">-</span>}</div>;
+      const createdAt = row.getValue("CreatedAt") as string | undefined;
+      return createdAt ? <div>{formatTimeAgo(createdAt)}</div> : <span className="text-muted-foreground">-</span>;
     },
   },
   {

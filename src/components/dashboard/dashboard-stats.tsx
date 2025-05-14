@@ -1,41 +1,34 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { Cloud, Container, HardDrive, Play, Power, Server } from "lucide-react"
+import { Cloud, Container, HardDrive, Play, Server, Cpu } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardSkeleton } from "./dashboard-skeleton";
+import type { DashboardStatsData } from "./types";
 
-// Define a type for your stats
-interface DockerStats {
-  runningContainers: number;
-  stoppedContainers: number;
-  images: number;
-  volumes: number;
-  networks: number;
-  dockerVersion: string;
-  os: string;
-  cpus: number;
-  memory: string;
-  cpuUsage: number;
-  memoryUsage: number;
-}
-
-const initialStats: DockerStats = {
+const initialStats: DashboardStatsData = {
   runningContainers: 0,
+  pausedContainers: 0,
   stoppedContainers: 0,
+  totalContainers: 0,
   images: 0,
   volumes: 0,
   networks: 0,
   dockerVersion: "N/A",
+  apiVersion: "N/A",
+  kernelVersion: "N/A",
   os: "N/A",
+  arch: "N/A",
   cpus: 0,
-  memory: "N/A",
-  cpuUsage: 0,
-  memoryUsage: 0,
+  memoryTotal: "N/A",
+  cpuUsagePercent: 0,
+  memoryUsagePercent: 0,
+  id: "N/A",
+  name: "N/A",
 };
 
 export function DashboardStats() {
-  const [stats, setStats] = useState<DockerStats>(initialStats);
+  const [stats, setStats] = useState<DashboardStatsData>(initialStats);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -49,7 +42,7 @@ export function DashboardStats() {
           const errorData = await response.json();
           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
-        const data: DockerStats = await response.json();
+        const data: DashboardStatsData = await response.json();
         setStats(data);
       } catch (e: unknown) {
         if (e instanceof Error) {
@@ -58,7 +51,6 @@ export function DashboardStats() {
           setError("An unknown error occurred while fetching stats.");
         }
         console.error("Failed to fetch stats:", e);
-        // Keep initialStats or some default error state if prefered
         setStats(initialStats); 
       } finally {
         setLoading(false);
@@ -66,8 +58,7 @@ export function DashboardStats() {
     }
 
     fetchData();
-    // Optional: set up an interval to refresh data periodically
-    // const intervalId = setInterval(fetchData, 5000); // every 5 seconds
+    // const intervalId = setInterval(fetchData, 30000); // Refresh every 30 seconds
     // return () => clearInterval(intervalId);
   }, []);
 
@@ -82,12 +73,12 @@ export function DashboardStats() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="md:col-span-2 lg:col-span-4">
           <CardHeader>
-            <CardTitle className="text-destructive">Error Loading Stats</CardTitle>
+            <CardTitle className="text-destructive">Error Loading Docker Stats</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-destructive-foreground">{error}</p>
+            <p>{error}</p>
             <p className="text-xs text-muted-foreground mt-2">
-              Please ensure Docker Desktop is running and the API can execute Docker commands.
+              Please ensure Docker is running and the application has permissions to access it.
             </p>
           </CardContent>
         </Card>
@@ -96,11 +87,11 @@ export function DashboardStats() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Running Containers</CardTitle>
-          <Play className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Running</CardTitle>
+          <Play className="h-5 w-5" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.runningContainers}</div>
@@ -109,11 +100,11 @@ export function DashboardStats() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Stopped Containers</CardTitle>
-          <Power className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Total Containers</CardTitle>
+          <Container className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.stoppedContainers}</div>
+          <div className="text-2xl font-bold">{stats.totalContainers}</div>
         </CardContent>
       </Card>
 
@@ -136,57 +127,63 @@ export function DashboardStats() {
           <div className="text-2xl font-bold">{stats.volumes}</div>
         </CardContent>
       </Card>
-
-      <Card className="md:col-span-2">
+      
+      <Card className="md:col-span-2 lg:col-span-2 xl:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">System Info</CardTitle>
+          <CardTitle className="text-sm font-medium">Version Info</CardTitle>
           <Server className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
+        <CardContent className="text-sm">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             <div>
-              <p className="text-xs text-muted-foreground">Docker Version</p>
-              <p className="text-sm font-medium">{stats.dockerVersion}</p>
+              <span className="font-semibold">Docker:</span> v{stats.dockerVersion}
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">OS</p>
-              <p className="text-sm font-medium">{stats.os}</p>
+              <span className="font-semibold">API:</span> v{stats.apiVersion}
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">CPU</p>
-              <p className="text-sm font-medium">{stats.cpus} CPUs</p>
+              <span className="font-semibold">OS:</span> {stats.os}
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Memory</p>
-              <p className="text-sm font-medium">{stats.memory}</p>
+              <span className="font-semibold">Arch:</span> {stats.arch}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2">
+      <Card className="md:col-span-2 lg:col-span-2 xl:col-span-2">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Resource Usage</CardTitle>
-          <Container className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Host Resources</CardTitle>
+          <Cpu className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <div>
+              <p className="text-xs text-muted-foreground">CPUs</p>
+              <p className="text-sm font-medium">{stats.cpus} Cores</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Total Memory</p>
+              <p className="text-sm font-medium">{stats.memoryTotal}</p>
+            </div>
+          </div>
+          <div className="mt-4 space-y-3">
+            <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">CPU Usage</span>
-                <span className="font-medium">{stats.cpuUsage}%</span>
+                <span className="text-muted-foreground">Avg. Container CPU Usage</span>
+                <span className="font-medium">{stats.cpuUsagePercent.toFixed(1)}%</span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full bg-primary" style={{ width: `${stats.cpuUsage}%` }} />
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-primary transition-all duration-300 ease-in-out" style={{ width: `${stats.cpuUsagePercent}%` }} />
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Memory Usage</span>
-                <span className="font-medium">{stats.memoryUsage}%</span>
+                <span className="text-muted-foreground">Avg. Container Memory Usage</span>
+                <span className="font-medium">{stats.memoryUsagePercent.toFixed(1)}%</span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full bg-primary" style={{ width: `${stats.memoryUsage}%` }} />
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-primary transition-all duration-300 ease-in-out" style={{ width: `${stats.memoryUsagePercent}%` }} />
               </div>
             </div>
           </div>

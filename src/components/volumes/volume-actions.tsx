@@ -34,7 +34,7 @@ async function deleteVolume(volumeName: string): Promise<void> {
   // Handle 200 OK or 204 No Content
   try {
     await response.json();
-  } catch (_e) {
+  } catch {
     // Ignore parsing error for 204
   }
 }

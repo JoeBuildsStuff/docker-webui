@@ -1,13 +1,34 @@
 export interface DockerNetwork {
-  ID: string;
   Name: string;
-  Driver: string;
+  Id: string;
+  Created: string;
   Scope: string;
-  CreatedAt: string;
-  IPv6?: string; // Optional, from `docker network ls`
-  Internal?: string; // Optional, from `docker network ls`
-  Labels?: string; // Optional, comma-separated
-  // Subnet information requires `docker network inspect` and is not included by default from `ls`.
-  // If Subnet is a critical feature, the API and this type would need to be enhanced.
-  // For now, we align with what `docker network ls --format "{{json .}}"` provides easily.
+  Driver: string;
+  EnableIPv6: boolean;
+  IPAM: {
+    Driver: string;
+    Options: Record<string, string> | null;
+    Config: {
+      Subnet?: string;
+      Gateway?: string;
+      IPRange?: string;
+      AuxiliaryAddresses?: Record<string, string>;
+    }[];
+  };
+  Internal: boolean;
+  Attachable: boolean;
+  Ingress: boolean;
+  ConfigFrom: {
+    Network: string;
+  };
+  ConfigOnly: boolean;
+  Containers: Record<string, {
+    Name: string;
+    EndpointID: string;
+    MacAddress: string;
+    IPv4Address: string;
+    IPv6Address: string;
+  }>;
+  Options: Record<string, string>;
+  Labels: Record<string, string>;
 } 

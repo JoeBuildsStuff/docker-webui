@@ -1,8 +1,14 @@
 export interface DockerImage {
-  ID: string;          // Full Image ID (e.g., "sha256:a6bd71f...")
-  Repository: string;  // Image repository name
-  Tag: string;         // Image tag
-  CreatedAt: string;   // Creation timestamp string (e.g., "2023-03-16 13:02:08 +0000 UTC")
-  Size: string;        // Image size string (e.g., "142MB")
-  // Other fields like CreatedSince, Digest, VirtualSize might also be available from docker inspect
+  Id: string; // Full Image ID, e.g., "sha256:a6bd71f..."
+  ParentId: string;
+  Repository: string; // Derived from RepoTags, e.g., "ubuntu"
+  Tag: string;        // Derived from RepoTags, e.g., "12.04"
+  RepoTags?: string[]; // Changed from | null to optional string[]
+  RepoDigests?: string[]; // Changed from | null to optional string[]
+  Created: number;    // Unix timestamp
+  Size: number;       // Size in bytes
+  VirtualSize: number; // Virtual size in bytes
+  SharedSize: number; // Shared size in bytes
+  Labels?: Record<string, string>; // Changed from | null to optional object
+  Containers: number; // Number of containers using this image
 } 

@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import Dockerode from 'dockerode';
 
-const execAsync = promisify(exec);
+const docker = new Dockerode();
 
-// Define ExecError at the top level
-interface ExecError extends Error {
-  stderr?: string;
-  stdout?: string;
+// Re-using the DockerodeError interface from the main route for consistency
+interface DockerodeError extends Error {
+  statusCode?: number;
+  json?: { message?: string };
+  reason?: string;
 }
 
 export async function DELETE(
-  request: Request,
+  request: Request, // request is unused but part of the Next.js API signature
   { params }: { params: { id: string } }
 ) {
   const containerId = params.id;
@@ -20,47 +20,44 @@ export async function DELETE(
     return NextResponse.json({ error: 'Container ID is required' }, { status: 400 });
   }
 
-  // Basic validation for typical Docker ID format (hex) or name format
-  if (!/^[a-fA-F0-9]+$/.test(containerId) && !/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(containerId)) {
-      return NextResponse.json({ error: 'Invalid container ID or name format' }, { status: 400 });
+  // Dockerode getContainer handles various forms of IDs/names.
+  // Basic validation can still be useful for early exit.
+  if (!/^[a-zA-Z0-9_.-]+$/.test(containerId) || containerId.length > 255 ) {
+    return NextResponse.json({ error: 'Invalid container ID or name format' }, { status: 400 });
   }
 
   try {
-    console.log(`Attempting to remove container: ${containerId}`);
-    // Standard remove command (does not force)
-    const { stdout, stderr } = await execAsync(`docker rm ${containerId}`);
-
-    if (stderr) {
-      console.warn(`Docker rm stderr for ${containerId}: ${stderr}`);
-      // Handle common errors
-      if (stderr.includes("No such container")) {
-        return NextResponse.json({ error: `Container not found: ${stderr}` }, { status: 404 });
-      }
-      // Error when trying to remove a running container without force
-      if (stderr.includes("stop the container before attempting removal or force remove")) {
-        return NextResponse.json({ error: `Container is running. Stop it first or use force remove: ${stderr}` }, { status: 409 }); // Conflict
-      }
-      // Other generic errors
-      return NextResponse.json({ error: `Failed to remove container: ${stderr}` }, { status: 500 });
-    }
-
-    console.log(`Docker rm stdout for ${containerId}: ${stdout}`); // Usually just the container ID/name again
-    // Return 200 OK with message, or could be 204 No Content
+    console.log(`[API /containers DELETE] Attempting to remove container: ${containerId}`);
+    const container = docker.getContainer(containerId);
+    
+    // Options for remove: { v: boolean (remove volumes), force: boolean, link: boolean }
+    // Defaulting to { force: false, v: false }
+    // To match `docker rm <id>` behavior. Add `force:true` if needed based on UI/UX.
+    await container.remove({ force: false, v: false }); 
+    
+    console.log(`[API /containers DELETE] Container ${containerId} removed successfully`);
     return NextResponse.json({ message: `Container ${containerId} removed successfully` }, { status: 200 });
 
   } catch (error: unknown) {
-    let errorMessage = 'An unknown error occurred while removing the Docker container.';
+    console.error(`[API /containers DELETE] Error removing container ${containerId}:`, error);
+    let errorMessage = 'An unknown error occurred while removing the container.';
+    let statusCode = 500;
+
     if (error instanceof Error) {
-        const execError = error as ExecError;
-        if (execError.stderr) {
-            errorMessage = `Docker command error: ${execError.stderr}`;
-        } else if (execError.stdout) {
-            errorMessage = `Docker command output (error context): ${execError.stdout}`;
-        } else {
-          errorMessage = error.message;
+      errorMessage = error.message;
+      const dockerError = error as DockerodeError;
+      if (dockerError.statusCode) {
+        statusCode = dockerError.statusCode;
+        errorMessage = dockerError.json?.message || dockerError.reason || dockerError.message;
+        if (dockerError.statusCode === 404) {
+          errorMessage = `Container '${containerId}' not found.`;
         }
+        if (dockerError.statusCode === 409) {
+          // 409 Conflict: often means container is running and force=false
+          errorMessage = `Cannot remove container '${containerId}'. It might be running or has associated resources. ${dockerError.json?.message || ''}`.trim();
+        }
+      }
     }
-    console.error(`[API /containers/${containerId} DELETE] Error:`, error);
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 } 

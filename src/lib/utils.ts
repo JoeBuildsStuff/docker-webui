@@ -1,5 +1,6 @@
-import { clsx, type ClassValue } from "clsx"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -7,35 +8,32 @@ export function cn(...inputs: ClassValue[]) {
 
 // Simple time formatter function - adjusted to handle string dates from API
 // This is a basic parser; consider a robust library like date-fns for production
-export function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    // Fallback or error handling if date parsing fails
-    console.warn(`formatTimeAgo: Failed to parse date string: "${dateString}"`);
-    return dateString; // Return original string or a placeholder
+export function formatTimeAgo(dateStringOrTimestamp: string | number | Date): string {
+  try {
+    let date: Date;
+    if (typeof dateStringOrTimestamp === 'string') {
+      date = parseISO(dateStringOrTimestamp);
+    } else if (typeof dateStringOrTimestamp === 'number') {
+      date = new Date(dateStringOrTimestamp);
+    } else {
+      date = dateStringOrTimestamp;
+    }
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch (error) {
+    console.error("Error formatting time ago:", error);
+    return "Invalid date";
   }
+}
 
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
+export function formatBytes(bytes: number, decimals = 2): string {
+  if (bytes === 0) return '0 Bytes';
+  if (isNaN(bytes) || !isFinite(bytes)) return 'N/A';
 
-  // Handle future dates gracefully
-  if (seconds < 0) {
-    return "in the future"; // Or return the formatted date: date.toLocaleDateString();
-  }
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-  let interval = seconds / 31536000 // 60 * 60 * 24 * 365
-  if (interval >= 1) return Math.floor(interval) + " years ago"
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  interval = seconds / 2592000 // 60 * 60 * 24 * 30
-  if (interval >= 1) return Math.floor(interval) + " months ago"
-
-  interval = seconds / 86400 // 60 * 60 * 24
-  if (interval >= 1) return Math.floor(interval) + " days ago"
-
-  interval = seconds / 3600 // 60 * 60
-  if (interval >= 1) return Math.floor(interval) + " hours ago"
-
-  interval = seconds / 60
-  if (interval >= 1) return Math.floor(interval) + " minutes ago"
-
-  return Math.floor(seconds) + " seconds ago"
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }

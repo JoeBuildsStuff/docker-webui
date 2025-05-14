@@ -58,7 +58,7 @@ export function ContainerActions({ container }: ContainerActionsProps) {
   })
 
   const handleRemove = () => {
-    mutation.mutate(container.ID) // Pass container ID to mutation
+    mutation.mutate(container.Id) // Pass container ID to mutation
   }
 
   return (
@@ -83,7 +83,7 @@ export function ContainerActions({ container }: ContainerActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Container</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove container &quot;{container?.Names}&quot; ({container?.ID.substring(0, 12)})?
+              Are you sure you want to remove container &quot;{(container?.Names?.[0]?.substring(1)) || (container?.Names?.[0]) || 'unknown name'}&quot; ({container?.Id ? container.Id.substring(0, 12) : 'N/A'})?
               {container?.State === 'running' && (
                 <span className="block text-destructive text-sm mt-2">Warning: Container is currently running. Removing may cause issues if not stopped gracefully. Standard remove will fail; consider stopping it first.</span>
               )}

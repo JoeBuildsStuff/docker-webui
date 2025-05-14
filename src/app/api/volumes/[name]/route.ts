@@ -1,17 +1,10 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import Dockerode from 'dockerode';
 
-const execAsync = promisify(exec);
-
-// Type definition for the error structure potentially thrown by execAsync
-interface ExecError extends Error {
-  stderr?: string;
-  stdout?: string;
-}
+const docker = new Dockerode();
 
 export async function DELETE(
-  request: Request,
+  request: Request, // request is unused but part of the Next.js API signature
   { params }: { params: { name: string } }
 ) {
   const volumeName = params.name;
@@ -20,46 +13,41 @@ export async function DELETE(
     return NextResponse.json({ error: 'Volume name is required' }, { status: 400 });
   }
 
-  // Basic validation for volume name (Docker constraints are quite strict)
+  // Basic validation for volume name
   if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(volumeName)) {
     return NextResponse.json({ error: 'Invalid volume name format' }, { status: 400 });
   }
 
   try {
-    console.log(`Attempting to remove volume: ${volumeName}`);
-    // Force remove (-f) might be needed if the volume is attached to a stopped container,
-    // but it's safer not to use it by default.
-    // The command will fail if the volume is in use by a running container.
-    const { stdout, stderr } = await execAsync(`docker volume rm ${volumeName}`);
-
-    if (stderr) {
-      // `docker volume rm` might output errors to stderr.
-      console.warn(`Docker volume rm stderr for ${volumeName}: ${stderr}`);
-      if (stderr.includes("No such volume") || stderr.includes("no such volume")) {
-        return NextResponse.json({ error: `Volume not found: ${stderr}` }, { status: 404 });
-      }
-      if (stderr.includes("is in use")) {
-        return NextResponse.json({ error: `Volume is currently in use: ${stderr}` }, { status: 409 });
-      }
-      // Generic error for other stderr content
-      return NextResponse.json({ error: `Failed to remove volume: ${stderr}` }, { status: 500 });
-    }
-
-    console.log(`Docker volume rm stdout for ${volumeName}: ${stdout}`); // Usually just the volume name
+    console.log(`[API /volumes DELETE] Attempting to remove volume: ${volumeName}`);
+    const volume = docker.getVolume(volumeName);
+    // The `remove` method can take an options object, e.g., { force: true }
+    // For now, default behavior (no force).
+    await volume.remove(); 
+    
+    console.log(`[API /volumes DELETE] Volume ${volumeName} removed successfully`);
     return NextResponse.json({ message: `Volume ${volumeName} removed successfully` }, { status: 200 });
 
   } catch (error: unknown) {
+    console.error(`[API /volumes DELETE] Error removing volume ${volumeName}:`, error);
     let errorMessage = 'An unknown error occurred while removing the Docker volume.';
+    let statusCode = 500;
+
     if (error instanceof Error) {
-        errorMessage = error.message;
-        const execError = error as ExecError;
-        if (execError.stderr) {
-            errorMessage = `Docker command error: ${execError.stderr}`;
-        } else if (execError.stdout) {
-            errorMessage = `Docker command output (error context): ${execError.stdout}`;
+      errorMessage = error.message;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dockerError = error as any;
+      if (dockerError.statusCode) {
+        statusCode = dockerError.statusCode;
+        if (dockerError.statusCode === 404) {
+          errorMessage = `Volume '${volumeName}' not found.`;
         }
+        if (dockerError.statusCode === 409) {
+          // This status code means the volume is in use
+          errorMessage = `Volume '${volumeName}' is in use and cannot be removed.`;
+        }
+      }
     }
-    console.error(`[API /volumes/${volumeName} DELETE] Error:`, error);
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 } 
