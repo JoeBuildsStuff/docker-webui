@@ -9,17 +9,17 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function DataTableImagesSkeleton() {
-  const rowCount = 5; // Number of skeleton rows to display
+  const rowCount = 10; // Number of skeleton rows to display
 
   return (
     <div className="w-full space-y-4">
       {/* Top Bar: Actions and View Options */}
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-9 w-24" /> {/* Refresh button */}
-          <Skeleton className="h-9 w-32" /> {/* Pull Image button */}
+          <Skeleton className="h-8 w-24" /> {/* Refresh button */}
+          <Skeleton className="h-8 w-36" /> {/* Create Volume button */}
         </div>
-        <Skeleton className="h-9 w-28" /> {/* View options button */}
+        <Skeleton className="h-8 w-18" /> {/* View options button */}
       </div>
 
       {/* Table Skeleton */}
@@ -27,8 +27,8 @@ export function DataTableImagesSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px]">
-                <Skeleton className="h-4 w-4" /> {/* Select Checkbox */}
+            <TableHead className="w-1">
+                <Skeleton className="h-4 w-4 rounded-sm" /> {/* Select Checkbox */}
               </TableHead>
               <TableHead>
                 <Skeleton className="h-4 w-32" /> {/* Repository */}
@@ -71,8 +71,8 @@ export function DataTableImagesSkeleton() {
                 <TableCell>
                   <Skeleton className="h-4 w-full" />
                 </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-8 w-8" />
+                <TableCell className="flex justify-end items-end">
+                  <Skeleton className="h-8 w-8 " />
                 </TableCell>
               </TableRow>
             ))}

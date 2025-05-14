@@ -16,8 +16,8 @@ export function DataTableVolumesSkeleton() {
       {/* Top Bar: Actions and View Options */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-9 w-24" /> {/* Refresh button */}
-          <Skeleton className="h-9 w-36" /> {/* Create Volume button */}
+          <Skeleton className="h-8 w-24" /> {/* Refresh button */}
+          <Skeleton className="h-8 w-36" /> {/* Create Volume button */}
         </div>
         <Skeleton className="h-8 w-18" /> {/* View options button */}
       </div>
@@ -27,7 +27,7 @@ export function DataTableVolumesSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px]">
+              <TableHead className="w-1">
                 <Skeleton className="h-4 w-4 rounded-sm" /> {/* Select Checkbox */}
               </TableHead>
               <TableHead>

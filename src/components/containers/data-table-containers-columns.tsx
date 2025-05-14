@@ -62,6 +62,12 @@ export const columns: ColumnDef<DockerContainer>[] = [
     },
   },
   {
+    id: "actions",
+    header: () => <div className="text-right">Actions</div>,
+    cell: ({ row }) => <div className="flex justify-start"><ContainerActions container={row.original} /></div>,
+    enableSorting: false, enableHiding: false,
+  },
+  {
     accessorKey: "State",
     header: ({ column }) => <DataTableColumnHeader column={column} title="State" />,
     cell: ({ row }) => {
@@ -108,12 +114,6 @@ export const columns: ColumnDef<DockerContainer>[] = [
       );
     },
     enableHiding: true,
-  },
-  {
-    id: "actions",
-    header: () => <div className="text-right">Actions</div>,
-    cell: ({ row }) => <div className="flex justify-end"><ContainerActions container={row.original} /></div>,
-    enableSorting: false, enableHiding: false,
   },
   // Optional columns (can be hidden by default)
   {
