@@ -12,9 +12,9 @@ interface DockerodeError extends Error {
 
 export async function DELETE(
   request: Request, // request is unused but part of the Next.js API signature
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const containerId = params.id;
+  const containerId = (await params).id;
 
   if (!containerId) {
     return NextResponse.json({ error: 'Container ID is required' }, { status: 400 });

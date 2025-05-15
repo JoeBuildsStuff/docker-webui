@@ -133,19 +133,31 @@ export function DashboardStats() {
           <CardTitle className="text-sm font-medium">Version Info</CardTitle>
           <Server className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="text-sm">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+        <CardContent className="text-sm @container">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
             <div>
-              <span className="font-semibold">Docker:</span> v{stats.dockerVersion}
+              <p className="text-xs text-muted-foreground">Docker</p>
+              <p className="text-sm font-medium">v{stats.dockerVersion}</p>
             </div>
             <div>
-              <span className="font-semibold">API:</span> v{stats.apiVersion}
+              <p className="text-xs text-muted-foreground">API</p>
+              <p className="text-sm font-medium">v{stats.apiVersion}</p>
             </div>
             <div>
-              <span className="font-semibold">OS:</span> {stats.os}
+              <p className="text-xs text-muted-foreground">OS</p>
+              <p className="text-sm font-medium">{stats.os}</p>
             </div>
             <div>
-              <span className="font-semibold">Arch:</span> {stats.arch}
+              <p className="text-xs text-muted-foreground">Arch</p>
+              <p className="text-sm font-medium">{stats.arch}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">CPUs</p>
+              <p className="text-sm font-medium">{stats.cpus} Cores</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Total Memory</p>
+              <p className="text-sm font-medium">{stats.memoryTotal}</p>
             </div>
           </div>
         </CardContent>
@@ -157,16 +169,6 @@ export function DashboardStats() {
           <Cpu className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <div>
-              <p className="text-xs text-muted-foreground">CPUs</p>
-              <p className="text-sm font-medium">{stats.cpus} Cores</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Total Memory</p>
-              <p className="text-sm font-medium">{stats.memoryTotal}</p>
-            </div>
-          </div>
           <div className="mt-4 space-y-3">
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">

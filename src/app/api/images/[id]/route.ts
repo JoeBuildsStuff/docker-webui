@@ -5,9 +5,9 @@ const docker = new Dockerode();
 
 export async function DELETE(
   request: Request, // request is unused but part of the Next.js API signature
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const imageId = params.id;
+  const imageId = (await params).id;
 
   if (!imageId) {
     return NextResponse.json({ error: 'Image ID is required' }, { status: 400 });

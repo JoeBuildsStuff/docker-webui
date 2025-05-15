@@ -7,9 +7,6 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Install Docker CLI
-RUN apk add --no-cache docker
-
 # Install dependencies only when needed
 FROM base AS deps
 COPY package.json pnpm-lock.yaml* ./
@@ -46,7 +43,8 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Temporarily comment out to run as root for diagnostics
+# TODO: Temporarily comment out to run as root - I keep getting errors about permissions 
+# even though the LLM says this should be correct
 # USER nextjs
 
 EXPOSE 3000

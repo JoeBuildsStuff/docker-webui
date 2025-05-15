@@ -77,7 +77,7 @@ export function DataTableContainers() {
   // Loading State
   if (isLoading) {
     // Use the new skeleton component (will be created in next step)
-    return <DataTableContainersSkeleton columnCount={8} />
+    return <DataTableContainersSkeleton />
   }
 
   // Error State

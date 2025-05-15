@@ -1,8 +1,6 @@
 # Docker WebUI
 
-<div align="center">
-  <img src="https://github.com/joetaylordev/assets/raw/main/docker-manager-screenshot.png" alt="Docker WebUI Dashboard" width="800"/>
-</div>
+<img src="https://github.com/joetaylordev/assets/raw/main/docker-manager-screenshot.png" alt="Docker WebUI Dashboard" width="800"/>
 
 A modern, intuitive web interface for managing your Docker environment. Monitor and control containers, images, volumes, and networks through a sleek, responsive dashboard.
 

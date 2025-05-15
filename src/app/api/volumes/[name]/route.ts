@@ -5,9 +5,9 @@ const docker = new Dockerode();
 
 export async function DELETE(
   request: Request, // request is unused but part of the Next.js API signature
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
-  const volumeName = params.name;
+  const volumeName = (await params).name;
 
   if (!volumeName) {
     return NextResponse.json({ error: 'Volume name is required' }, { status: 400 });

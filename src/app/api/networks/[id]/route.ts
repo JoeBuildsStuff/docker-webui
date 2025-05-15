@@ -5,30 +5,30 @@ const docker = new Dockerode();
 
 export async function DELETE(
   request: Request, // request is unused but part of the Next.js API signature
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const networkIdOrName = params.id;
+  const networkId = (await params).id;
 
-  if (!networkIdOrName) {
+  if (!networkId) {
     return NextResponse.json({ error: 'Network ID or name is required' }, { status: 400 });
   }
 
   // Basic validation for typical Docker ID (hex) or name (alphanumeric with ._ -)
   // Dockerode will handle actual existence checks.
-  if (!/^[a-zA-Z0-9_.-]+$/.test(networkIdOrName) || networkIdOrName.length > 255) {
+  if (!/^[a-zA-Z0-9_.-]+$/.test(networkId) || networkId.length > 255) {
       return NextResponse.json({ error: 'Invalid network ID or name format' }, { status: 400 });
   }
 
   try {
-    console.log(`[API /networks DELETE] Attempting to remove network: ${networkIdOrName}`);
-    const network = docker.getNetwork(networkIdOrName);
+    console.log(`[API /networks DELETE] Attempting to remove network: ${networkId}`);
+    const network = docker.getNetwork(networkId);
     await network.remove();
     
-    console.log(`[API /networks DELETE] Network ${networkIdOrName} removed successfully`);
-    return NextResponse.json({ message: `Network ${networkIdOrName} removed successfully` }, { status: 200 });
+    console.log(`[API /networks DELETE] Network ${networkId} removed successfully`);
+    return NextResponse.json({ message: `Network ${networkId} removed successfully` }, { status: 200 });
 
   } catch (error: unknown) {
-    console.error(`[API /networks DELETE] Error removing network ${networkIdOrName}:`, error);
+    console.error(`[API /networks DELETE] Error removing network ${networkId}:`, error);
     let errorMessage = 'An unknown error occurred while removing the Docker network.';
     let statusCode = 500;
 
@@ -40,10 +40,10 @@ export async function DELETE(
       if (dockerError.statusCode) {
         statusCode = dockerError.statusCode;
         if (dockerError.statusCode === 404) {
-          errorMessage = `Network '${networkIdOrName}' not found.`;
+          errorMessage = `Network '${networkId}' not found.`;
         }
         if (dockerError.statusCode === 409) {
-          errorMessage = `Network '${networkIdOrName}' has active endpoints and cannot be removed.`;
+          errorMessage = `Network '${networkId}' has active endpoints and cannot be removed.`;
         }
         // Dockerode might return 500 for trying to remove predefined networks, 
         // or specific error messages. The default message should cover it.

@@ -77,7 +77,7 @@ export function DataTableNetworks() {
   // Loading State
   if (isLoading) {
     // Use the new skeleton component (will be created in next step)
-    return <DataTableNetworksSkeleton columnCount={columns.length} />
+    return <DataTableNetworksSkeleton/>
   }
 
   // Error State
